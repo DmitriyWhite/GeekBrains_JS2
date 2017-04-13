@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <script>
+      function Menu(items) {
+          //Вспомогательная функция создающая нужный элемент с нужным классом и нужным id
+          this.elt= function (name,id,className) {
+             var elt = document.createElement(name);
+             if(className)elt.className=className;
+             if(id)elt.id=id;
+             return elt;
+          }
+          this.render = function () {
+              var menu = this.elt('ul',this.id,this.className);
+              for(var i=0;i<items.length;i++){
+                  var menuItem = menu.appendChild(this.elt('li'));
+                  menuItem.innerHTML = "<a href="+items[i].href+">"+items[i].title+"</a>";
+              }
+              return menu;
+          }
+      }
+      //Доп класс реализующий подменю
+      //subMenu - объект класса Menu, title - имя пункта к которому присоудиняется подменю
+      function SubMenu(subMenu,title) {
+          Menu.call(this);
+          this.render = function(){
+          var menu = this.elt('ul',this.id,this.className);
+          for(var i=0;i<items.length;i++){
+              var menuItem = menu.appendChild(this.elt('li'));
+              if(items[i].title==title){
+                menuItem.appendChild(subMenu.render());
+              }
+              else{
+                  menuItem.innerHTML = "<a href="+items[i].href+">"+items[i].title+"</a>";
+              }
+            }
+              return menu;
+          }
+
+      }
+      //Массив объектов. Пункты меню и ссылки
+      items=[
+          {
+              title: 'Главная',
+              href: 'index.html'
+          },
+          {
+              title: 'Каталог',
+              href: 'catalog.html'
+          },
+          {
+              title: 'Контакты',
+              href: 'contacts.html'
+          },
+          {
+              title: 'Форум',
+              href: 'forum.html'
+          },
+          {
+              title: 'Обратная связь',
+              href: 'feedback.html'
+          }
+          ];
+      var mainMenu=new Menu(items);
+      mainMenu.className='myClass';
+      mainMenu.id='myId';
+      document.body.appendChild(mainMenu.render());
+      //Создадим подменю у пункта Каталог
+      catalogItems=[
+          {
+              title: 'Категория 1',
+              href: '#'
+          },
+          {
+              title: 'Категория 2',
+              href: '#'
+          },
+          {
+              title: 'Категория 3',
+              href: '#'
+          },
+          {
+              title: 'Категория 4',
+              href: '#'
+          }
+      ];
+
+      var mySubMenu=new SubMenu(new Menu(catalogItems),'Каталог');
+      document.body.appendChild(mySubMenu.render());
+    </script>
+  </body>
+</html>
