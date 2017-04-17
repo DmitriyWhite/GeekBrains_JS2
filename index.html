@@ -1,95 +1,75 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-  </head>
-  <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AJAX Запрос</title>
+    <style>
+        input{
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<form id="form" method="post">
+    <input type="text" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
+    <input type="text" name="email" placeholder="e-mail">
+    <input type="text" name="gender" placeholder="gender">
+    <input type="text" name="credit_card" placeholder="credit cart">
+    <input type="text" name="bio" placeholder="bio">
+    <input type="text" name="birth" placeholder="birth">
+    <input type="button" id="send" value="Отправить">
+    <input type="button" id="test" value="Заполнить тестовыми данными">
+</form>
+</form>
     <script>
-      function Menu(items) {
-          //Вспомогательная функция создающая нужный элемент с нужным классом и нужным id
-          this.elt= function (name,id,className) {
-             var elt = document.createElement(name);
-             if(className)elt.className=className;
-             if(id)elt.id=id;
-             return elt;
-          }
-          this.render = function () {
-              var menu = this.elt('ul',this.id,this.className);
-              for(var i=0;i<items.length;i++){
-                  var menuItem = menu.appendChild(this.elt('li'));
-                  menuItem.innerHTML = "<a href="+items[i].href+">"+items[i].title+"</a>";
-              }
-              return menu;
-          }
-      }
-      //Доп класс реализующий подменю
-      //subMenu - объект класса Menu, title - имя пункта к которому присоудиняется подменю
-      function SubMenu(subMenu,title) {
-          Menu.call(this);
-          this.render = function(){
-          var menu = this.elt('ul',this.id,this.className);
-          for(var i=0;i<items.length;i++){
-              var menuItem = menu.appendChild(this.elt('li'));
-              if(items[i].title==title){
-                menuItem.appendChild(subMenu.render());
-              }
-              else{
-                  menuItem.innerHTML = "<a href="+items[i].href+">"+items[i].title+"</a>";
-              }
+        var send = document.getElementById('send'); //кнопка "отправить"
+        var test = document.getElementById('test'); // кнопка "Заполнить тестовыми данными"
+        var form = document.getElementById('form'); // Форма
+        //Обработчик нажатия кнопки "Заполнить тестовыми данными"
+        test.onclick = function () {
+            form.elements[0].value = 'Vasiliy';
+            form.elements[1].value = '123456';
+            form.elements[2].value = 'my@mail.ru';
+            form.elements[3].value = 'm';
+            form.elements[4].value = '4556639300009235';
+            form.elements[5].value = 'blabla';
+            form.elements[6].value = '2017-04-12';
+        }
+        //Дополнительная функция преобразующая данные в текстовых полях в строку
+        function getDataToString() {
+            var str = '';
+            for (var i = 0; i < form.elements.length - 2; i++) {
+                str += form.elements[i].name + '=' + form.elements[i].value + '&';
             }
-              return menu;
-          }
-
-      }
-      //Массив объектов. Пункты меню и ссылки
-      items=[
-          {
-              title: 'Главная',
-              href: 'index.html'
-          },
-          {
-              title: 'Каталог',
-              href: 'catalog.html'
-          },
-          {
-              title: 'Контакты',
-              href: 'contacts.html'
-          },
-          {
-              title: 'Форум',
-              href: 'forum.html'
-          },
-          {
-              title: 'Обратная связь',
-              href: 'feedback.html'
-          }
-          ];
-      var mainMenu=new Menu(items);
-      mainMenu.className='myClass';
-      mainMenu.id='myId';
-      document.body.appendChild(mainMenu.render());
-      //Создадим подменю у пункта Каталог
-      catalogItems=[
-          {
-              title: 'Категория 1',
-              href: '#'
-          },
-          {
-              title: 'Категория 2',
-              href: '#'
-          },
-          {
-              title: 'Категория 3',
-              href: '#'
-          },
-          {
-              title: 'Категория 4',
-              href: '#'
-          }
-      ];
-
-      var mySubMenu=new SubMenu(new Menu(catalogItems),'Каталог');
-      document.body.appendChild(mySubMenu.render());
+            return str.slice(0,-1);
+        }
+        //Обработчик события нажатия кнопки "Отправить"
+        send.onclick = function () {
+            var xhr;
+            if (window.XMLHttpRequest) {
+                xhr = new XMLHttpRequest();
+            }
+            else if (window.ActiveXObject) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xhr.overrideMimeType('text/xml');
+            xhr.onreadystatechange = function () {
+                if(xhr.readyState==XMLHttpRequest.DONE){
+                    if(xhr.status==200){
+                        console.log(xhr.responseText);
+                    }
+                }
+            }
+            xhr.timeout=15000;
+            xhr.ontimeout = function () {
+                console.log('Загрузка выполняется дольше положенного');
+            }
+            xhr.open('POST','http://localhost/validator.php',true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(getDataToString());
+        }
     </script>
-  </body>
+</body>
 </html>
