@@ -20,7 +20,7 @@
 </form>
     <script>
       //регулярка поиска цвета формата #AF67D8
-        console.log("color: #000000; background-color: #F1F2F3".match(/#[0-9A-F]{6}/ig));
+        console.log("color: #A00000; background-color: #fff".match(/#([0-9A-F]{6}|[0-9A-F]{3})/ig));
       //поиск положительных чисел в том числе и с точкой
       var str = "-1.5 0 12. 123.4.", result;
       var regexp = /(^| )?\d+(\.\d+)?( |$)/g;
@@ -28,11 +28,11 @@
           console.log(result[0]);
       }
       //поиск времени
-        console.log('Московское время 09:00, Местное время 21-00'.match(/\d\d[:-]\d\d/ig));
+        console.log('Московское время 09:00, Местное время 21-00'.match(/[0-2]\d[:-][0-5]\d/ig));
       //проверка координаты
         var s1="A7", s2="123A7";
-        console.log(/^\w\d$/.test(s1));
-        console.log(/^\w\d$/.test(s2));
+        console.log(/^[a-h][1-8]$/i.test(s1));
+        console.log(/^[a-h][1-8]$/i.test(s2));
       //проверка номера телефона, e-mail, пасспорта.
         var telephone=document.getElementsByName('telephone');
         var email=document.getElementsByName('email');
