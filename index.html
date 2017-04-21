@@ -12,64 +12,41 @@
 </head>
 <body>
 <form id="form" method="post">
-    <input type="text" name="username" placeholder="Username">
-    <input type="password" name="password" placeholder="Password">
+    <input type="text" name="telephone" placeholder="Номер телефона">
     <input type="text" name="email" placeholder="e-mail">
-    <input type="text" name="gender" placeholder="gender">
-    <input type="text" name="credit_card" placeholder="credit cart">
-    <input type="text" name="bio" placeholder="bio">
-    <input type="text" name="birth" placeholder="birth">
-    <input type="button" id="send" value="Отправить">
-    <input type="button" id="test" value="Заполнить тестовыми данными">
+    <input type="text" name="passport" placeholder="серия и номер паспорта">
+    <input type="button" id="send" value="Проверить данные">
 </form>
 </form>
     <script>
-        var send = document.getElementById('send'); //кнопка "отправить"
-        var test = document.getElementById('test'); // кнопка "Заполнить тестовыми данными"
-        var form = document.getElementById('form'); // Форма
-        //Обработчик нажатия кнопки "Заполнить тестовыми данными"
-        test.onclick = function () {
-            form.elements[0].value = 'Vasiliy';
-            form.elements[1].value = '123456';
-            form.elements[2].value = 'my@mail.ru';
-            form.elements[3].value = 'm';
-            form.elements[4].value = '4556639300009235';
-            form.elements[5].value = 'blabla';
-            form.elements[6].value = '2017-04-12';
+      //регулярка поиска цвета формата #AF67D8
+        console.log("color: #000000; background-color: #F1F2F3".match(/#[0-9A-F]{6}/ig));
+      //поиск положительных чисел в том числе и с точкой
+      var str = "-1.5 0 12. 123.4.", result;
+      var regexp = /(^| )?\d+(\.\d+)?( |$)/g;
+      while (result = regexp.exec(str)) {
+          console.log(result[0]);
+      }
+      //поиск времени
+        console.log('Московское время 09:00, Местное время 21-00'.match(/\d\d[:-]\d\d/ig));
+      //проверка координаты
+        var s1="A7", s2="123A7";
+        console.log(/^\w\d$/.test(s1));
+        console.log(/^\w\d$/.test(s2));
+      //проверка номера телефона, e-mail, пасспорта.
+        var telephone=document.getElementsByName('telephone');
+        var email=document.getElementsByName('email');
+        var passport=document.getElementsByName('passport');
+        var checkData=document.getElementById('send');
+        checkData.onclick = function () {
+            if(/^\+\d\(\d{3}\)-\d{3}-\d{2}-\d{2}$/.test(telephone[0].value))telephone[0].style.backgroundColor="green";
+            else telephone[0].style.backgroundColor="red";
+            if(/^\w+@\w+\.\w{2}$/i.test(email[0].value))email[0].style.backgroundColor="green";
+            else email[0].style.backgroundColor="red";
+            if(/^\d{2} \d{2} \d{6}$/.test(passport[0].value))passport[0].style.backgroundColor="green";
+            else passport[0].style.backgroundColor="red";
         }
-        //Дополнительная функция преобразующая данные в текстовых полях в строку
-        function getDataToString() {
-            var str = '';
-            for (var i = 0; i < form.elements.length - 2; i++) {
-                str += form.elements[i].name + '=' + form.elements[i].value + '&';
-            }
-            return str.slice(0,-1);
-        }
-        //Обработчик события нажатия кнопки "Отправить"
-        send.onclick = function () {
-            var xhr;
-            if (window.XMLHttpRequest) {
-                xhr = new XMLHttpRequest();
-            }
-            else if (window.ActiveXObject) {
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            xhr.overrideMimeType('text/xml');
-            xhr.onreadystatechange = function () {
-                if(xhr.readyState==XMLHttpRequest.DONE){
-                    if(xhr.status==200){
-                        console.log(xhr.responseText);
-                    }
-                }
-            }
-            xhr.timeout=15000;
-            xhr.ontimeout = function () {
-                console.log('Загрузка выполняется дольше положенного');
-            }
-            xhr.open('POST','http://localhost/validator.php',true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.send(getDataToString());
-        }
+
     </script>
 </body>
 </html>
