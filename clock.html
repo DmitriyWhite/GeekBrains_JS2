@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">	
+	<title>Часы на Canvas</title>
+	<style>
+		.alert{
+			display: block;
+			border-style: none;
+			width: 300px;
+			height: 40px;
+			background-color: crimson;
+			color: #fff;
+			font-size: 24px;
+			text-transform: uppercase;
+		}
+		.alert:hover{
+			box-shadow: 0 0 5px 0px #000000;
+		}
+		.alert:active{
+			background-color: red;
+		}
+	</style>
+</head>
+<body>
+<div id="clock"></div>
+<script>
+	function Clock(options){
+		this.start=start;
+		this.stop=stop;
+		var timerID;
+		var elem = options.elem;
+		//создаем элемент canvas
+        var canvasBlock = document.createElement('canvas');
+        canvasBlock.id="canvas";
+        canvasBlock.width=300;
+        canvasBlock.height=300;
+        elem.appendChild(canvasBlock);
+        //coздаем кнопку
+        var btn= document.createElement('button');
+        btn.textContent='Alert';
+        btn.className='alert';
+        elem.appendChild(btn);
+        btn.onclick= function () {
+			toggle();
+        }
+		function start(){
+			timerID=setInterval(paintClock, 1000); //рисуем часы через равные промежутки времени
+		}
+		function stop(){
+			clearInterval(timerID);
+			paintClock();
+			timerID=null;
+		}
+		function toggle() {
+			if(timerID!=null){
+			    stop();
+			} else {
+			    start();
+			}
+        }
+		function paintClock() {
+			var now = new Date();
+			var sec = now.getSeconds();
+			var min = now.getMinutes();
+			var hr = now.getHours();
+			var context=canvasBlock.getContext("2d");
+
+			context.save();
+
+			context.clearRect(0,0,300,300);
+			context.translate(150, 150);
+			context.scale(0.4,0.4);
+			context.rotate(-Math.PI/2);
+
+			context.strokeStyle = "black";
+			context.fillStyle = "black";
+			context.lineWidth = 8;
+			context.lineCap = "butt";
+
+			context.save();
+			context.beginPath();
+			// Основание
+			context.fillStyle = "#fff";
+			context.beginPath();
+			context.arc(0, 0, 250, 0, 2*Math.PI, true);
+			context.fill();
+			context.restore();
+			context.save();
+
+			for (var i = 0; i < 12; i++) {
+				context.rotate(Math.PI/6);
+				context.moveTo(200,0);
+				context.lineTo(240,0);
+			}
+
+			context.stroke();
+			context.restore();
+
+			context.save();
+
+			context.rotate((Math.PI/6)*hr +
+				(Math.PI/360)*min +
+				(Math.PI/21600)*sec);
+			context.lineWidth = 14;
+
+			context.beginPath();
+			context.moveTo(-40,0);
+
+
+			context.lineTo(160,0);
+			context.stroke();
+			context.restore();
+
+			context.save();
+
+			// минутная стрелка
+			context.rotate((Math.PI/30*min) +
+				(Math.PI/1800)*sec);
+			context.lineWidth = 10;
+
+			context.beginPath();
+			context.moveTo(-56,0);
+			context.lineTo(224,0);
+			context.stroke();
+			context.restore();
+
+			context.save();
+			// секундная стрелка
+			context.rotate(sec * Math.PI/30);
+			context.strokeStyle = "#D40000";// цвет контура
+			context.fillStyle = "#D40000";
+			context.lineWidth = 6;
+
+			context.beginPath();
+			context.moveTo(-60,0);
+			context.lineTo(166,0);
+			context.stroke();
+			context.restore();
+
+			context.restore();
+		}
+	}
+	var clock=new Clock({
+	    elem: document.getElementById('clock')
+	});
+	clock.start();
+</script>
+</body>
+</html>
