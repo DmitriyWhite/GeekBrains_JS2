@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Задание 6</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style>
+        input {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .progressbar {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+<form id="form" method="post">
+    <input type="text" name="telephone" placeholder="Номер телефона">
+    <input type="text" name="email" placeholder="e-mail">
+    <input type="text" name="passport" placeholder="серия и номер паспорта">
+    <input type="text" name="birth" id="birth" placeholder="дата рождения">
+    <input type="button" id="send" value="Проверить данные">
+</form>
+<div class="progressbar" id="progressbar"></div>
+<script>
+    $(document).ready(function () {
+        $("#birth").datepicker({
+            monthNames: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+            dayNamesMin: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
+            firstDay: 1,
+            dateFormat: "yy-mm-dd"
+        });
+        //проверка затолнения формы
+        $("#progressbar").progressbar({
+            value: 0
+        });
+        var progress=0;
+        $("form input:text").forEach(function () {
+            this.onmouseout = function () {
+                if (this.value != null) {
+                    progress += 25;
+                    $("#progressbar").progressbar("value", progress);
+                }
+            }
+        });
+    });
+    //регулярка поиска цвета формата #AF67D8
+    console.log("color: #A00000; background-color: #fff".match(/#([0-9A-F]{6}|[0-9A-F]{3})/ig));
+    //поиск положительных чисел в том числе и с точкой
+    var str = "-1.5 0 12. 123.4.", result;
+    var regexp = /(^| )?\d+(\.\d+)?( |$)/g;
+    while (result = regexp.exec(str)) {
+        console.log(result[0]);
+    }
+    //поиск времени
+    console.log('Московское время 09:00, Местное время 21-00'.match(/[0-2]\d[:-][0-5]\d/ig));
+    //проверка координаты
+    var s1 = "A7", s2 = "123A7";
+    console.log(/^[a-h][1-8]$/i.test(s1));
+    console.log(/^[a-h][1-8]$/i.test(s2));
+    //проверка номера телефона, e-mail, пасспорта.
+    var telephone = document.getElementsByName('telephone');
+    var email = document.getElementsByName('email');
+    var passport = document.getElementsByName('passport');
+    var checkData = document.getElementById('send');
+    checkData.onclick = function () {
+        if (/^\+\d\(\d{3}\)-\d{3}-\d{2}-\d{2}$/.test(telephone[0].value)) telephone[0].style.backgroundColor = "green";
+        else telephone[0].style.backgroundColor = "red";
+        if (/^\w+@\w+\.\w{2}$/i.test(email[0].value)) email[0].style.backgroundColor = "green";
+        else email[0].style.backgroundColor = "red";
+        if (/^\d{2} \d{2} \d{6}$/.test(passport[0].value)) passport[0].style.backgroundColor = "green";
+        else passport[0].style.backgroundColor = "red";
+    }
+
+</script>
+</body>
+</html>
