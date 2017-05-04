@@ -11,6 +11,7 @@
             display: block;
             margin-bottom: 10px;
         }
+
         .progressbar {
             width: 300px;
         }
@@ -18,11 +19,15 @@
 </head>
 <body>
 <form id="form" method="post">
-    <input type="text" name="telephone" placeholder="Номер телефона">
+    <input type="text" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
     <input type="text" name="email" placeholder="e-mail">
-    <input type="text" name="passport" placeholder="серия и номер паспорта">
-    <input type="text" name="birth" id="birth" placeholder="дата рождения">
-    <input type="button" id="send" value="Проверить данные">
+    <input type="text" name="gender" placeholder="gender">
+    <input type="text" name="credit card" placeholder="credit cart">
+    <input type="text" name="bio" placeholder="bio">
+    <input type="text" name="birth" id="birth" placeholder="birth">
+    <input type="button" id="send" value="Отправить">
+    <input type="button" id="test" value="Заполнить тестовыми данными">
 </form>
 <div class="progressbar" id="progressbar"></div>
 <script>
@@ -33,47 +38,74 @@
             firstDay: 1,
             dateFormat: "yy-mm-dd"
         });
-        //проверка затолнения формы
+        //проверка заполнения формы
         $("#progressbar").progressbar({
             value: 0
         });
-        var progress=0;
-        $("form input:text").forEach(function () {
-            this.onmouseout = function () {
-                if (this.value != null) {
-                    progress += 25;
-                    $("#progressbar").progressbar("value", progress);
-                }
-            }
+        //функция проверки формы
+        function checkFields() {
+            var count = 0;
+            $("form :text, :password").each(function () {
+                if ($(this).val() != "") count++;
+            });
+            $("#progressbar").progressbar("value", 100 * count / $("form :text, :password").length);
+        }
+        $("form :text").change(function () {
+            checkFields();
         });
+        //Отправка AJAX запросов
+        $("#send").click(function () {
+            $.ajax({
+                url: 'http://localhost/validator.php',
+                data: $("form :text, :password").serialize(),
+                dataType: 'json',
+                type: 'POST',
+                success: function (serverAns) {
+                    if (serverAns.result) {
+                        //если все поля правильные подсвечиваем зеленым
+                        $("form :text, :password").animate({backgroundColor: '#00ff00'}, 1000);
+                    }
+                    else{
+                        //массив имен полей заполненных правильно
+                        var trueFields=$("form :text, :password").serializeArray().map(function (obj) {
+                            return obj.name;
+                        });
+
+                        //подсвечиваем неправильные поля и применяем эффект bounce
+                        for (var key in serverAns.error) {
+                            $("input[name='" + key.toLowerCase() + "']").animate({backgroundColor: '#ff0000'}, 1000);
+                            $("input[name='" + key.toLowerCase() + "']").effect('bounce', 1000);
+                            var dialog = document.createElement('div');
+                            $(dialog).html('<p>' + serverAns.error[key] + '</p>');
+                            $(dialog).attr('title', 'Внимание ошибка ' + key + '!');
+                            $(dialog).dialog();
+                            //Поля заполненные правильно
+                            trueFields.splice(trueFields.indexOf(key.toLowerCase()),1);
+                        }
+                        //подсвечиваем правильные поля
+                        trueFields.forEach(function (name) {
+                            $("input[name='" + name + "']").animate({backgroundColor: '#00ff00'}, 1000);
+                        });
+
+                    }
+                }
+            });
+        });
+        //Чтобы много раз не заполнять поля. Созданим кнопку заполнения правильными данными
+        var test = document.getElementById('test'); // кнопка "Заполнить тестовыми данными"
+        var form = document.getElementById('form'); // Форма
+        //Обработчик нажатия кнопки "Заполнить тестовыми данными"
+        test.onclick = function () {
+            form.elements[0].value = 'Vasiliy';
+            form.elements[1].value = '12345678';
+            form.elements[2].value = 'my@mail.ru';
+            form.elements[3].value = 'm';
+            form.elements[4].value = '4556639300009235';
+            form.elements[5].value = 'blabla';
+            form.elements[6].value = '2017-04-12';
+            checkFields();
+        };
     });
-    //регулярка поиска цвета формата #AF67D8
-    console.log("color: #A00000; background-color: #fff".match(/#([0-9A-F]{6}|[0-9A-F]{3})/ig));
-    //поиск положительных чисел в том числе и с точкой
-    var str = "-1.5 0 12. 123.4.", result;
-    var regexp = /(^| )?\d+(\.\d+)?( |$)/g;
-    while (result = regexp.exec(str)) {
-        console.log(result[0]);
-    }
-    //поиск времени
-    console.log('Московское время 09:00, Местное время 21-00'.match(/[0-2]\d[:-][0-5]\d/ig));
-    //проверка координаты
-    var s1 = "A7", s2 = "123A7";
-    console.log(/^[a-h][1-8]$/i.test(s1));
-    console.log(/^[a-h][1-8]$/i.test(s2));
-    //проверка номера телефона, e-mail, пасспорта.
-    var telephone = document.getElementsByName('telephone');
-    var email = document.getElementsByName('email');
-    var passport = document.getElementsByName('passport');
-    var checkData = document.getElementById('send');
-    checkData.onclick = function () {
-        if (/^\+\d\(\d{3}\)-\d{3}-\d{2}-\d{2}$/.test(telephone[0].value)) telephone[0].style.backgroundColor = "green";
-        else telephone[0].style.backgroundColor = "red";
-        if (/^\w+@\w+\.\w{2}$/i.test(email[0].value)) email[0].style.backgroundColor = "green";
-        else email[0].style.backgroundColor = "red";
-        if (/^\d{2} \d{2} \d{6}$/.test(passport[0].value)) passport[0].style.backgroundColor = "green";
-        else passport[0].style.backgroundColor = "red";
-    }
 
 </script>
 </body>
