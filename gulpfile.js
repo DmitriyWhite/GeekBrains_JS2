@@ -12,17 +12,17 @@ gulp.task('browserSync', function () {
         }
     })
 });
-gulp.task('watch',['useref','browserSync'], function () {
-   gulp.watch('app/*.html', browserSync.reload);
-   gulp.watch('app/js/**/*.js', browserSync.reload);
+gulp.task('watch', ['useref', 'browserSync'], function () {
+    gulp.watch('app/*.html', browserSync.reload);
+    gulp.watch('app/js/**/*.js', browserSync.reload);
 });
 gulp.task('useref', function () {
-   return gulp.src('app/**/*')
-       .pipe(useref())
-       .pipe(gulpif('*.js', babel({
-           presets: ['es2015']
-       })))
-       //.pipe(gulpif('*.js', uglify()))
-       .pipe(gulpif('*.css', minifyCss()))
-       .pipe(gulp.dest('dist'));
+    return gulp.src('app/**/*')
+        .pipe(useref())
+        .pipe(gulpif('*.js', babel({
+            presets: ['es2015']
+        })))
+        //.pipe(gulpif('*.js', uglify()))
+        .pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulp.dest('dist'));
 });
